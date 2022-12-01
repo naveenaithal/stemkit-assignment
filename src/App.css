@@ -1,0 +1,114 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.small-input{
+      width: 50px;
+}
+.drawer-container{
+      display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+}
+.save-btn{
+  position: absolute;
+    top: 93%;
+       width: 96%;
+    left: 8px;
+}
+.variables-list{
+  display: flex;
+    gap: 8px;
+}
+.highlight-variable{
+      position: relative;
+    top: -14px;
+     background-color: grey;
+    color: white;
+  font-size: 16px;
+    border-radius: 2px;
+}
+
+
+.blank-box-container{
+display: flex;
+    align-items: center;
+}
+.plane-box{
+      height: 19px;
+    width: 32px;
+    border: 1px solid black;
+}
+
+.ans-btn{
+      position: absolute;
+    right: 50px;
+
+}
+
+.variable{
+  background-color: grey;
+    color: white;
+    padding: 4px;
+    border-radius: 2px;
+}
+
+.faded-text{
+  color: #8ca4a5;
+}
+ .question-content{
+height: 400px;
+ }
+
+
+ .inserted-question{
+  cursor: pointer;
+  display: flex;
+    gap: 7px;
+ }
+ .sentence:hover{
+  background-color: rgb(75, 75, 244);
+  color: white;
+ }
+
+ .selected{
+    background-color: rgb(75, 75, 244);
+  color: white;
+ }
