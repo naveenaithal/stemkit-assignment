@@ -1,18 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { Dropdown, DropdownButton, Form, InputGroup } from 'react-bootstrap';
 
 function App() {
 
-  // const [isDrawer, setIsDrawer] = useState(false)
-  // const [isSelected,setIsSelected]=useState(false)
-  const [selectedWord, setSelectedWord] = useState({word:'',index:0})
-  // const [isVariableDrawer, setIsVariableDrawer] = useState(false)
-  
 
+  const [selectedWord, setSelectedWord] = useState({word:'',index:0})
  
 const variableInitialState={ variableName:'',variableStartRange:0,variableEndRange:10,variableValue:0,wordIndex:0}
   const [variable, setVariable] = useState(variableInitialState)
@@ -23,9 +19,12 @@ const variableInitialState={ variableName:'',variableStartRange:0,variableEndRan
   const [question, setQuestion] = useState('')
   const [questionArray, setQuestionArray] = useState([])
 const [isAns,setIsAns]=useState(false)
-const [answer,setAnswer]=useState({variableName:'C',value:0})
+const [answer,setAnswer]=useState({variableName:'',value:0})
 const [generatedQuestions,setGeneratedQuestions]=useState([])
-const [equation,setEquation]=useState()
+const [equation,setEquation]=useState('')
+const [isAnsBoxSelected,setIsAnsBoxSelected]=useState(false)
+const [cordinates,setCordinates]=useState({x:0,y:0,isEnabled:false})
+
 
   const handleVariableChange = (e) => {
     let { name, value } = e.target
@@ -72,16 +71,18 @@ const [equation,setEquation]=useState()
   
 
 
+
      const openRandom = () => {
         handleShow(true)
-        setIsRandom(!isRandom)
+       setIsRandom(!isRandom)
+    
       }
 
 
   const handleInsert = () => {
     // setIsVariableDrawer(false)
     setIsAns(!isAns)
-    setVariablesList([...variablesList,{variableName:answer.variableName}])
+    // setVariablesList([...variablesList,{variableName:answer.variableName}])
 
   }
   const handleAnswerChange = (e) => {
@@ -91,38 +92,44 @@ const [equation,setEquation]=useState()
 
   const handleVariableSubmit = (e) => {
     e.preventDefault()
-    if (isAns) {
-       let randomQuestions=[]
 
+
+    if (isAnsBoxSelected) {
+ setVariablesList([...variablesList,{variableName:variable.variableName,variableStartRange:variable.variableStartRange,variableEndRange:variable.variableEndRange}])
+      setVariable(variableInitialState)
+
+       let randomQuestions=[]
+          function getRandomArbitrary(min, max) {
+    return Math.round(Math.random() * (max - min) + min);
+}
+     console.log(variablesList)
       for (let i = 0; i < 5; i++){
         let newStringArray = question.split(" ")
 
-        variablesList.forEach((item) => {
-          const randomNumber=Math.round((Math.random() * 30));
+        variablesList.forEach((item, i) => {
+          // console.log("var List index",i)
+          // console.log("item word index",item?.wordIndex)
+          //variable a 
+          const randomNumber = getRandomArbitrary(parseInt(item.variableStartRange),parseInt(item.variableEndRange));     
           newStringArray[item?.wordIndex] = randomNumber
   
-})
-    let newString = newStringArray.join(" ");
+        })
+        
+        let newString = newStringArray.join(" ");
     // setGeneratedQuestions(newString)
     randomQuestions.push(newString)
       }
 setEquation(variable.variableValue)
 
 setGeneratedQuestions(randomQuestions)
-   
- getAnswer(0)
-//  getAnswer(1)
-//  getAnswer(2)
-//  getAnswer(3)
-//  getAnswer(4)
+      handleClose()
 
       return
     }
-    setVariablesList([...variablesList,variable])
-    setVariable(variableInitialState)
-    handleClose()
+  setVariablesList([...variablesList,variable])
+      setVariable(variableInitialState)
+      handleClose()
   }
-
 
 
 
@@ -144,7 +151,7 @@ setGeneratedQuestions(randomQuestions)
 let randomAnswers=[]
 
 
-    
+    // wll get answers [10,20....] based on len of variables
       for (let i = 0; i < variableIndexes.length - 1; i++){
          randomAnswers.push( generatedQuestions[questionID]?.split(' ')[variableIndexes[i]?.index])
       
@@ -154,23 +161,29 @@ let randomAnswers=[]
     
 let filterdEqn=equation?.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g)  
       
-      vars.forEach((item) => {
-        var index = equation?.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g).indexOf(item);
-     filterdEqn.splice(index, 1);
-      })
+    //   vars.forEach((item) => {
+    //     var index = equation?.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g).indexOf(item);
+    //  filterdEqn.splice(index, 1);
+    //   })
+    
+     vars.forEach((item) => {
+        let i=equation.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g).indexOf(item)
+ if(i!== -1){
+    let ind=filterdEqn.indexOf(item)
+    filterdEqn.splice(ind,1)
+ }
+})
       
   
       let ansStr = ''
-     
 randomAnswers.forEach((item,i,arr)=>{
         if(arr.length-1==i){
              ansStr+=item
         }else{
             
-        ansStr+=item+filterdEqn[0]
+        ansStr+=item+filterdEqn[i]
         }
 })
-      
       
       return eval(ansStr)
 
@@ -179,18 +192,29 @@ randomAnswers.forEach((item,i,arr)=>{
 }
 
   
+  const handleMouseClick = (e) => {
+    if (!cordinates.isEnabled) {
+      
+      setCordinates({...cordinates,x:e.clientX,y:e.clientY,isEnabled:true})
+    }
+}
 
 
+  useEffect(() => {
+  
+},[cordinates.x])
 
   return (
     <>
    
       <div className='container'>
 
-        <div className='question-container'>
-          <div className='question-content'>
- <InputGroup className="mt-3 mb-3" style={{width:'700px'}}>
+        <div className='question-container' onClick={handleMouseClick}>
+          <div className='question-content' style={{position:'relative',left:`${cordinates.x}px`,top:`${cordinates.y}px`,cursor:'pointer',zIndex:'10'}}>
+            {cordinates.isEnabled ?
+              <InputGroup className="mt-3 mb-3" style={{ width: '400px' }}>
         <Form.Control
+         as="textarea"
           placeholder="Enter Question"
           aria-label="Enter Question"
                 aria-describedby="basic-addon2"
@@ -199,19 +223,18 @@ randomAnswers.forEach((item,i,arr)=>{
         <Button variant="outline-secondary" id="button-addon2" onClick={handleSubmitQuestion} >
           Add Question
         </Button>
-            </InputGroup>
-            
-            <div className='inserted-question'>
+            </InputGroup> : null}
+            <div className='inserted-question'  >
 
               {questionArray?.map((word,i) => (
-                <>
-                <p key={i} className={questionArray.indexOf(word)===questionArray.indexOf(selectedWord.word) && i===selectedWord.index  ?'selected sentence' :'sentence'} onClick={()=>handleWordClick(word,i)} >{word}</p>
+                <div key={i}>
+                <p  className={questionArray.indexOf(word)===questionArray.indexOf(selectedWord.word) && i===selectedWord.index  ?'selected sentence' :'sentence'} onClick={()=>handleWordClick(word,i)} >{word}</p>
 
 
                   <p className='highlight-variable'>{variablesList.find(variable => variable.wordIndex === i)?.variableName}</p>
               
 
-                </>
+                </div>
               ))}
                 
             </div>
@@ -219,17 +242,17 @@ randomAnswers.forEach((item,i,arr)=>{
             <div className='generate-question mt-3'>
             </div>
             {isAns && <>
-              Ans: <input className='small-input' onChange={handleAnswerChange} value={answer.variableName} />
+              Ans: <p className={isAnsBoxSelected ? `answer-box-selected`:'small-box'} onClick={()=>setIsAnsBoxSelected(!isAnsBoxSelected)} >{answer.variableName}</p>
             </>
             }
 
 
           </div>
-          <div className='question-footer d-flex'>
+          <div className='question-footer d-flex mt-3' style={{zIndex:'15'}}>
 
       <button className='btn btn-outline-secondary' style={{marginRight:'6px'}} onClick={handleVariable}>Add Variable</button>
       <DropdownButton id="dropdown-secondary-button" title="Insert">
-              <Dropdown.Item href="#/action-1" onClick={handleInsert} >
+              <Dropdown.Item onClick={handleInsert} >
                 <div className='blank-box-container'>
 
                 <div className='plane-box'></div> &nbsp; Blank

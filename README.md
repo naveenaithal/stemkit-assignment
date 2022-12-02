@@ -173,3 +173,56 @@ console.log(eval(ansStr))
 
 
 
+
+
+let equation='c=a+b*d'
+let vars=['a','b','d']
+    
+let filterdEqn=equation.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g)  
+      
+   
+      vars.forEach((item) => {
+        let i=equation.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g).indexOf(item)
+ if(i!== -1){
+    let ind=filterdEqn.indexOf(item)
+    filterdEqn.splice(ind,1)
+ }
+})
+      console.log(filterdEqn)
+      
+      let randomAnswers=[10,40,70]
+      
+      
+         let ansStr = ''
+     
+// randomAnswers.forEach((item,i,arr)=>filterdEqn.forEach((op)=>{
+    
+//     console.log(item,op)
+//         if(arr.length-1==i){
+//              ansStr+=item
+//         }else{
+            
+//         ansStr+=item+op
+//         }
+// }))
+
+// console.log(ansStr)
+      
+      randomAnswers.forEach((ans,i,arr)=>{
+           if(arr.length-1==i){
+             ansStr+=ans
+        }else{
+            console.log(arr.length)
+        ansStr+=ans+filterdEqn[i]
+        }
+      })
+      console.log(ansStr)
+      console.log(eval('(10+40)*70'))
+      
+      
+      
+      
+
+ 
+ 
+
