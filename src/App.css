@@ -38,6 +38,11 @@
 }
 
 
+
+.top-layer{
+  z-index: 15 !important;
+}
+
 .small-input{
       width: 50px;
 }
@@ -110,10 +115,15 @@ height: 400px;
  }
 
 
+ .form-control{
+  color:red  !important;
+ }
+
  .inserted-question{
   cursor: pointer;
   display: flex;
     gap: 7px;
+    color:red
  }
  .sentence:hover{
   background-color: rgb(75, 75, 244);

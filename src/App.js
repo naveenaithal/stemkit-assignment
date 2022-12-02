@@ -2,8 +2,9 @@ import logo from './logo.svg';
 import './App.css';
 import { useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import Offcanvas from 'react-bootstrap/Offcanvas';
-import { Dropdown, DropdownButton, Form, InputGroup } from 'react-bootstrap';
+import {Form, InputGroup } from 'react-bootstrap';
+import Drawer from './Drawer';
+import { ButtonsComponent } from './ButtonsComponent';
 
 function App() {
 
@@ -35,11 +36,9 @@ const [cordinates,setCordinates]=useState({x:0,y:0,isEnabled:false})
 
   const handleClose = () => {
     setShow(false)
-    //  setIsVariableDrawer(false)
   };
   const handleShow = () => {
     setShow(true)
-    //  setIsVariableDrawer(true)
   };
 
 
@@ -80,14 +79,13 @@ const [cordinates,setCordinates]=useState({x:0,y:0,isEnabled:false})
 
 
   const handleInsert = () => {
-    // setIsVariableDrawer(false)
     setIsAns(!isAns)
-    // setVariablesList([...variablesList,{variableName:answer.variableName}])
 
   }
-  const handleAnswerChange = (e) => {
-    setAnswer({...answer,variableName:e.target.value})
-  }
+
+  // const handleAnswerChange = (e) => {
+  //   setAnswer({...answer,variableName:e.target.value})
+  // }
 
 
   const handleVariableSubmit = (e) => {
@@ -107,9 +105,7 @@ const [cordinates,setCordinates]=useState({x:0,y:0,isEnabled:false})
         let newStringArray = question.split(" ")
 
         variablesList.forEach((item, i) => {
-          // console.log("var List index",i)
-          // console.log("item word index",item?.wordIndex)
-          //variable a 
+         
           const randomNumber = getRandomArbitrary(parseInt(item.variableStartRange),parseInt(item.variableEndRange));     
           newStringArray[item?.wordIndex] = randomNumber
   
@@ -136,9 +132,6 @@ setGeneratedQuestions(randomQuestions)
 
 
   const getAnswer = (questionID) => {
-
- 
-      
       let variableIndexes = variablesList.map((item,i,arr) => {
         if (arr.length-1=== i) {
          return null
@@ -148,44 +141,36 @@ setGeneratedQuestions(randomQuestions)
           return {index:item.wordIndex,varName:item.variableName}
         }})
 
-let randomAnswers=[]
-
-
+          let randomAnswers=[]
     // wll get answers [10,20....] based on len of variables
       for (let i = 0; i < variableIndexes.length - 1; i++){
          randomAnswers.push( generatedQuestions[questionID]?.split(' ')[variableIndexes[i]?.index])
-      
-      }     
+           }     
 
       let vars = variableIndexes.map(item => item?.varName)
-    
-let filterdEqn=equation?.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g)  
-      
-    //   vars.forEach((item) => {
-    //     var index = equation?.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g).indexOf(item);
-    //  filterdEqn.splice(index, 1);
-    //   })
+      let filterdEqn=equation?.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g)  
+
     
      vars.forEach((item) => {
         let i=equation.substring(equation.indexOf('=') + 1).split(/([-+*\/])/g).indexOf(item)
- if(i!== -1){
-    let ind=filterdEqn.indexOf(item)
-    filterdEqn.splice(ind,1)
- }
-})
+        if(i!== -1){
+            let ind=filterdEqn.indexOf(item)
+            filterdEqn.splice(ind,1)
+        }
+          })
       
   
       let ansStr = ''
-randomAnswers.forEach((item,i,arr)=>{
+      randomAnswers.forEach((item,i,arr)=>{
         if(arr.length-1==i){
              ansStr+=item
         }else{
             
         ansStr+=item+filterdEqn[i]
         }
-})
+              })
       
-      return eval(ansStr)
+             return eval(ansStr)
 
 
 
@@ -212,7 +197,7 @@ randomAnswers.forEach((item,i,arr)=>{
         <div className='question-container' onClick={handleMouseClick}>
           <div className='question-content' style={{position:'relative',left:`${cordinates.x}px`,top:`${cordinates.y}px`,cursor:'pointer',zIndex:'10'}}>
             {cordinates.isEnabled ?
-              <InputGroup className="mt-3 mb-3" style={{ width: '400px' }}>
+              <InputGroup className="mt-3 mb-3" style={{  width: '400px' }}>
         <Form.Control
          as="textarea"
           placeholder="Enter Question"
@@ -228,7 +213,7 @@ randomAnswers.forEach((item,i,arr)=>{
 
               {questionArray?.map((word,i) => (
                 <div key={i}>
-                <p  className={questionArray.indexOf(word)===questionArray.indexOf(selectedWord.word) && i===selectedWord.index  ?'selected sentence' :'sentence'} onClick={()=>handleWordClick(word,i)} >{word}</p>
+                <p  className={ i==2 ? 'green' : ''  || questionArray.indexOf(word)===questionArray.indexOf(selectedWord.word) && i===selectedWord.index  ?'selected sentence' :'sentence'} onClick={()=>handleWordClick(word,i)} >{word}</p>
 
 
                   <p className='highlight-variable'>{variablesList.find(variable => variable.wordIndex === i)?.variableName}</p>
@@ -242,97 +227,23 @@ randomAnswers.forEach((item,i,arr)=>{
             <div className='generate-question mt-3'>
             </div>
             {isAns && <>
-              Ans: <p className={isAnsBoxSelected ? `answer-box-selected`:'small-box'} onClick={()=>setIsAnsBoxSelected(!isAnsBoxSelected)} >{answer.variableName}</p>
+              Ans: <p className={isAnsBoxSelected ? `answer-box-selected`:'small-box'} onClick={()=>setIsAnsBoxSelected(!isAnsBoxSelected)} ></p>
             </>
             }
-
-
           </div>
-          <div className='question-footer d-flex mt-3' style={{zIndex:'15'}}>
+        
+          
+          <ButtonsComponent handleInsert={ handleInsert} handleVariable={handleVariable} openRandom={openRandom} />
 
-      <button className='btn btn-outline-secondary' style={{marginRight:'6px'}} onClick={handleVariable}>Add Variable</button>
-      <DropdownButton id="dropdown-secondary-button" title="Insert">
-              <Dropdown.Item onClick={handleInsert} >
-                <div className='blank-box-container'>
+          
 
-                <div className='plane-box'></div> &nbsp; Blank
-                </div>
-              </Dropdown.Item>
-    
-    </DropdownButton>
-          <button className='btn btn-outline-secondary' style={{marginLeft:'5px'}} onClick={()=>openRandom()} >Random</button>
-          </div>
-
-
+          <Drawer
+            show={show} handleClose={handleClose} isRandom={isRandom} handleVariableSubmit={handleVariableSubmit} variable={variable}
+            variablesList={variablesList} generatedQuestions={generatedQuestions} getAnswer={getAnswer} isAns={isAns}
+            handleVariableChange={handleVariableChange}
+          />
           
   </div>
-      <Offcanvas placement={'end'} show={show} onHide={handleClose} >
-        <Offcanvas.Header closeButton style={{height:'32px'}} >
-          <Offcanvas.Title>Variable</Offcanvas.Title>
-          </Offcanvas.Header>
-          <hr/>
-          <Offcanvas.Body>
-            {!isRandom ?
-          
-              <form onSubmit={handleVariableSubmit}>
-
-            <div className='drawer-container'>
-              <div>
-              <li className='faded-text mb-2'>Add Variable</li>
-            Variable Name <input onChange={handleVariableChange} name='variableName'  value={variable.variableName} className='small-input' />
-              </div>
-              <div>
-            variable Range <input onChange={handleVariableChange} name='variableStartRange' value={variable.variableStartRange} className='small-input' /> to <input onChange={handleVariableChange} value={variable.variableEndRange} name='variableEndRange' className='small-input' />
-              </div>
-
-
-{/* existng variable
-*/}
-              <div>
-              <li className='faded-text'>Existing Variables</li>
-              <div className='variables-list'>
-                {variablesList?.map((variable,i) => (
-                  <p className='variable'  key={i}>
-{variable.variableName}
-  </p> 
-                    
-))}
-                    </div>
-               
-              </div>
-              
-
-           <li className='faded-text'>Define variables </li> 
-            <textarea className='form-control' onChange={handleVariableChange}  value={variable.variableValue}  name='variableValue'  > </textarea>
-
-
-</div>
-
-
-
-
-              <button className='btn btn-primary save-btn' type='submit'>{isAns? "Generate" :"Save" }</button>
-              </form> :generatedQuestions.map((question,i) => {
-                return <div key={i}>
-                  <p>{`Q${i + 1}. ${question}`}</p>
-
-                  <p>{`Ans. ${getAnswer(i)} `}</p>
-                  
-                </div>
-                
-              })
-              
-             
-            }
-              
-        </Offcanvas.Body>
-        {/* <Offcanvas.Footer> */}
-          {/* </Offcanvas.Footer> */}
-          
-      </Offcanvas>
-
-
-
       </div>
 
 
